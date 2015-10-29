@@ -2,15 +2,21 @@ package com.lostinkaos.akcessible;
 
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
-import android.os.Bundle;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
-import android.view.accessibility.AccessibilityEventSource;
 import android.view.accessibility.AccessibilityNodeInfo;
-import android.widget.Toast;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 /**
  * Created by keya on 29/10/15.
@@ -18,6 +24,7 @@ import java.util.List;
 public class MyAccessibilityService extends AccessibilityService {
 
     List<String> mstringsToBeTranslated;
+    SharedPreferences sharedPreferences;
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
@@ -29,11 +36,60 @@ public class MyAccessibilityService extends AccessibilityService {
         Log.d(MainActivity.DEBUG_TAG, event.getClassName().toString());
         Log.d(MainActivity.DEBUG_TAG, event.getClassName().toString().equals("android.widget.TextView") + "");
 
-
         mstringsToBeTranslated.clear();
         AccessibilityNodeInfo node = event.getSource();
         huntForTextView(node);
-        Log.d(MainActivity.DEBUG_TAG, mstringsToBeTranslated.toString());
+
+        sharedPreferences = getSharedPreferences("com.lostinkaos.akcessible", MODE_APPEND);
+
+        JsonObject data = new JsonObject();
+        data.addProperty("REV-APP-ID", "rev.web.com.lostinkaos.akcessible");
+        data.addProperty("REV-API-KEY", "7261887e35364a1ba42498b2f7f6a0064190");
+        data.addProperty("domain", 1);
+        data.addProperty("inputLanguage", "english");
+        data.addProperty("webSdk", 0);
+        data.addProperty("targetLanguage", sharedPreferences.getString("language", "hindi"));
+        data.addProperty("tokenize", 1);
+
+        final MyApplication application = (MyApplication) getApplicationContext();
+
+        if( mstringsToBeTranslated.size() > 0 ) {
+
+            Gson gson = new Gson();
+            gson.toJson(mstringsToBeTranslated);
+            String values = gson.toJson(mstringsToBeTranslated);
+
+            data.add("inArray", new JsonParser().parse(values).getAsJsonArray());
+
+            ApiClient.getClient().translate(data, new Callback<Localise>() {
+                @Override
+                public void success(Localise localise, Response response) {
+                    for (Localise.Translated t : localise.getOutArray()) {
+                        Log.d(MainActivity.DEBUG_TAG, t.getInString() + " | " + t.getResponse());
+                        application.getTranslated().setText( t.getResponse() );
+
+//                        if( application.getFloatingMessage().getTranslated() == null ) {
+//                            Log.d(MainActivity.DEBUG_TAG, "[CB] TextView is null");
+//                        } else {
+//                            Log.d(MainActivity.DEBUG_TAG, "[CB] TextView is not null");
+//                        }
+//                        if(application.getFloatingMessage().getFloatingMessageLayout() == null) {
+//                            Log.d(MainActivity.DEBUG_TAG, "[CB] FSM is null");
+//                        } else {
+//                            Log.d(MainActivity.DEBUG_TAG, "[CB] FSM is not null");
+//                        }
+
+                    }
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    Log.e(MainActivity.DEBUG_TAG, "Error trying to fetch translation");
+                }
+            });
+        } else {
+            Log.i(MainActivity.DEBUG_TAG, "Nothing to translate");
+        }
 
 //        Log.d(MainActivity.DEBUG_TAG, "Window State Changed!");
 //        AccessibilityNodeInfo rootNode = getRootInActiveWindow();
@@ -102,10 +158,10 @@ public class MyAccessibilityService extends AccessibilityService {
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
+        Log.v(MainActivity.DEBUG_TAG, "onServiceConnected");
 
         mstringsToBeTranslated = new ArrayList<>();
 
-        Log.v(MainActivity.DEBUG_TAG, "onServiceConnected");
         AccessibilityServiceInfo info = new AccessibilityServiceInfo();
         info.flags = AccessibilityServiceInfo.DEFAULT;
 //        info.eventTypes = AccessibilityEvent.TYPES_ALL_MASK;

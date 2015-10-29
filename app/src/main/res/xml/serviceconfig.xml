@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <accessibility-service
-    android:accessibilityEventTypes=""
+    android:accessibilityEventTypes="typeViewClicked|typeViewFocused"
     android:packageNames=""
     android:settingsActivity="com.example.android.apis.accessibility.TestBackActivity"
     android:canRetrieveWindowContent="true"

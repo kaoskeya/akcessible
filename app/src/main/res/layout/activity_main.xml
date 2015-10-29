@@ -11,13 +11,24 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <TextView android:text="Hello World!" android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        <Spinner
+            android:id="@+id/languageSpinner"
+            android:entries="@array/languages_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
-        <Button
-            android:id="@+id/open_accessibility"
-            android:text="Open Accessibility"
-            android:layout_width="wrap_content"
+        <TextView android:text="Red" android:layout_width="match_parent"
+            android:gravity="center"
+            android:clickable="true"
+            android:textSize="24dp"
+            android:layout_marginTop="16dp"
+            android:layout_height="wrap_content" />
+
+        <TextView android:text="Yellow" android:layout_width="match_parent"
+            android:gravity="center"
+            android:clickable="true"
+            android:textSize="24dp"
+            android:layout_marginTop="16dp"
             android:layout_height="wrap_content" />
 
     </LinearLayout>
