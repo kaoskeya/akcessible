@@ -19,11 +19,14 @@ public class MainActivity extends AppCompatActivity {
     SharedPreferences sharedPreferences;
     Spinner languageSpinner;
     FloatingMessage floatingMessage;
+    MyApplication application;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        application = (MyApplication) getApplicationContext();
 
         sharedPreferences = getSharedPreferences("com.lostinkaos.akcessible", MODE_APPEND);
 
@@ -75,7 +78,8 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(i, 0);
                 return true;
             case R.id.enable_float:
-                Intent intent = new Intent(MainActivity.this, FloatingFaceBubbleService.class);
+//                Intent intent = new Intent(MainActivity.this, FloatingFaceBubbleService.class);
+                Intent intent = new Intent(MainActivity.this, application.getFloatingMessage().getClass());
                 startService(intent);
                 return true;
         }

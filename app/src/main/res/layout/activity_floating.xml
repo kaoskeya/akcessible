@@ -9,10 +9,12 @@
     tools:context="com.lostinkaos.akcessible.FloatingActivity">
 
     <TextView
-        android:text="YO!"
         android:id="@+id/translated"
-        android:background="#f00"
+        android:background="@drawable/gray_border"
+        android:textColor="#000"
+        android:padding="8dp"
+        android:scrollbars="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="200dp" />
 
 </LinearLayout>

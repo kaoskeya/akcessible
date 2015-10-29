@@ -59,15 +59,17 @@ public class MyAccessibilityService extends AccessibilityService {
             gson.toJson(mstringsToBeTranslated);
             String values = gson.toJson(mstringsToBeTranslated);
 
+            application.getTranslated().setText("Loading");
+
             data.add("inArray", new JsonParser().parse(values).getAsJsonArray());
 
             ApiClient.getClient().translate(data, new Callback<Localise>() {
                 @Override
                 public void success(Localise localise, Response response) {
+                    StringBuilder sb = new StringBuilder();
                     for (Localise.Translated t : localise.getOutArray()) {
                         Log.d(MainActivity.DEBUG_TAG, t.getInString() + " | " + t.getResponse());
-                        application.getTranslated().setText( t.getResponse() );
-
+                        sb.append( t.getResponse() ).append("\n");
 //                        if( application.getFloatingMessage().getTranslated() == null ) {
 //                            Log.d(MainActivity.DEBUG_TAG, "[CB] TextView is null");
 //                        } else {
@@ -80,6 +82,7 @@ public class MyAccessibilityService extends AccessibilityService {
 //                        }
 
                     }
+                    application.getTranslated().setText( sb.toString() );
                 }
 
                 @Override
@@ -165,7 +168,8 @@ public class MyAccessibilityService extends AccessibilityService {
         AccessibilityServiceInfo info = new AccessibilityServiceInfo();
         info.flags = AccessibilityServiceInfo.DEFAULT;
 //        info.eventTypes = AccessibilityEvent.TYPES_ALL_MASK;
-        info.eventTypes = AccessibilityEvent.TYPE_VIEW_CLICKED | AccessibilityEvent.TYPE_VIEW_FOCUSED;
+//        info.eventTypes = AccessibilityEvent.TYPE_VIEW_CLICKED | AccessibilityEvent.TYPE_VIEW_FOCUSED;
+        info.eventTypes = AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED;
         info.feedbackType = AccessibilityServiceInfo.FEEDBACK_GENERIC;
         setServiceInfo(info);
     }
