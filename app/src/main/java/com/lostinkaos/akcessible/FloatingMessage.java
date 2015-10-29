@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -29,6 +30,7 @@ public class FloatingMessage extends Service {
     private View floatingMessageLayout;
     Context context;
     MyApplication application;
+    ImageView drag;
 
     public View getFloatingMessageLayout() {
         return floatingMessageLayout;
@@ -47,7 +49,8 @@ public class FloatingMessage extends Service {
         LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         floatingMessageLayout = inflater.inflate(R.layout.activity_floating, null);
 
-        application.setTranslated( (TextView) floatingMessageLayout.findViewById(R.id.translated) );
+        application.setTranslated((TextView) floatingMessageLayout.findViewById(R.id.translated));
+        drag = (ImageView) floatingMessageLayout.findViewById(R.id.drag);
 
 //        application.getTranslated().setText("");
 
@@ -77,11 +80,11 @@ public class FloatingMessage extends Service {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
                     //remove face bubble on long press
-                    if(System.currentTimeMillis()-touchStartTime> ViewConfiguration.getLongPressTimeout() && initialTouchX== event.getX()){
-                        windowManager.removeView(floatingMessageLayout);
-                        stopSelf();
-                        return false;
-                    }
+//                    if(System.currentTimeMillis()-touchStartTime> ViewConfiguration.getLongPressTimeout() && initialTouchX== event.getX()){
+//                        windowManager.removeView(floatingMessageLayout);
+//                        stopSelf();
+//                        return false;
+//                    }
                     switch(event.getAction()){
                         case MotionEvent.ACTION_DOWN:
                             touchStartTime = System.currentTimeMillis();
